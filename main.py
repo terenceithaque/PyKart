@@ -9,18 +9,45 @@ screen = pygame.display.set_mode((800, 600))  # Créer une fenêtre de jeu
 
 pygame.display.set_caption("PyKart !")
 
+
+def generer_terrain():
+    "Générer le terrain"
+    terrain = []  # Créer une liste pour contenir les données du terrain de jeu
+    x = 0
+    y = random.randint(400, 500)
+    terrain.append(y)
+    for i in range(1, 800):  # Générer le terrain
+        # Valeur de pente au hasard pour créer des virages
+        pente = random.randint(-5, 5)
+        y += pente
+        if y > 600:
+            y = 600
+        elif y < 400:
+            y = 400
+
+        terrain.append(y)
+
+    return terrain
+
+
+def dessiner_terrain(terrain):
+    "Dessiner le terrain à l'écran"
+    for i in range(799):  # Dessiner le terrain
+        pygame.draw.line(screen, (192, 192, 192),
+                         (i, terrain[i]), (i+1, terrain[i+1]))
+
+
+def dessiner_ligne_depart():
+    "Dessiner la ligne de départ"
+    pygame.draw.line(screen, (255, 255, 255), (0, 500), (800, 500), 5)
+
+
 seed = time.time()
 random.seed(seed)
-print(seed)
-
-terrain = []  # Créer une liste pour contenir les données du terrain de jeu
-
-for i in range(800):  # Générer le terrain
-    terrain.append(random.randint(0, 600))
-
-for i in range(800):  # Dessiner le terrain
-    pygame.draw.line(screen, (0, 255, 0), (i, 600), (i, 600 - terrain[i]))
-
+terrain = generer_terrain()
+dessiner_terrain(terrain)
+dessiner_ligne_depart()
+pygame.display.update()
 
 pygame.display.update()
 
