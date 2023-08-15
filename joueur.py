@@ -16,44 +16,54 @@ class Joueur(pygame.sprite.Sprite):
 
         self.rect.y = y  # Position y du joueur
 
-        global vitesse
-        vitesse = 5  # Vitesse de déplacement du joueur
+        # global vitesse
+        self.vitesse = 0  # Vitesse de déplacement initiale
+
+        self.vitesse_max = 5  # Vitesse de déplacement maximale
+        self.acceleration = 0.1  # Taux d'accélération
+        self.deceleration = 0.1  # Taux de décélération
 
         # self.vitesse = 5  # Vitesse de déplacement du joueur
 
-    def avancer(self, key):
+    def avancer(self):
         "Faire avancer le joueur"
         # Si le joueur appuie sur la touche "flèche vers le haut":
-        global vitesse
-        vitesse = 5
-        if key[pygame.K_UP]:
-            self.rect.y -= vitesse
-            pygame.time.wait(10)
 
-    def reculer(self, key):
+        self.acceleration += 0.1
+        self.vitesse = min(
+            self.vitesse + self.acceleration, self.vitesse_max)
+        print("self.vitesse :", self.vitesse)
+
+        self.rect.y -= self.vitesse
+        pygame.time.wait(100)
+
+    def reculer(self):
         "Faire reculer le joueur"
         # Si le joueur appuie sur la touche "flèche vers le bas":
         # self.vitesse = 5
-        if key[pygame.K_DOWN]:
-            self.rect.y += vitesse
-            pygame.time.wait(10)
+        # if key[pygame.K_DOWN]:
+        # self.acceleration += 0.1
+        self.vitesse = max(
+            self.vitesse + self.acceleration, -self.vitesse_max)
+        self.rect.y += self.vitesse
+        pygame.time.wait(100)
 
-    def freiner(self, key, event):
-        "Freiner"
-        # Si le joueur n'appuie pas sur les touches pour avancer ou reculer
-        if not key[pygame.K_UP] or not key[pygame.K_DOWN]:
+    def get_events(self):
+        list_events = pygame.event.get()
+        return list_events
 
-            pygame.time.set_timer(event, 1000)
+    def freiner(self):
 
-            for event in pygame.event.get():
-                if event.type == event:
-                    global vitesse
-                    vitesse = vitesse - 1
-                    if vitesse < 0:
-                        vitesse = 0
+        if self.vitesse > 0:  # Si la vitesse du kart est supérieure à 0
+            # Réduire la vitesse jusqu'à ce qu'elle atteigne 0
+            self.vitesse = max(self.vitesse - self.deceleration, 0)
+        elif self.vitesse < 0:
+            # Augmenter la vitesse, car elle est négative
+            self.vitesse = min(self.vitesse + self.deceleration, 0)
 
-            # pygame.time.wait(100)
+        self.acceleration = 0.1  # Réinitialiser l'accélération
+        pygame.time.wait(100)
 
-    def draw(self, screen):
+    def draw(self, screen, camera):
 
-        screen.blit(self.image, (self.rect.x, self.rect.y))
+        screen.blit(self.image, camera.apply(self))

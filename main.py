@@ -1,9 +1,11 @@
 # Script principal du jeu
 import pygame
+from pygame.camera import Camera
 from pygame.draw import polygon
 import random
 import time
 from joueur import *
+from camera import *
 
 pygame.init()  # Initialiser Pygame
 
@@ -84,22 +86,35 @@ pygame.display.update()
 
 pygame.display.update()
 
+camera = Camera(800, 600)
+
 
 running = True  # Le jeu est-il en cours d'exécution ?
 
+
 while running:
+
+    keys = pygame.key.get_pressed()  # Obtenir toutes les touches pressées par le joueur
+
+    # print("Etat touche haut :", keys[pygame.K_UP])
+    # print("Etat touche bas :", keys[pygame.K_DOWN])
+
+    if keys[pygame.K_UP]:  # Si le joueur appuie sur la touche 'flèche vers le haut'
+        joueur.avancer()  # Le kart du joueur avance
+
+    elif keys[pygame.K_DOWN]:  # Si le joueur appuie sur la touche 'flèche vers le bas'
+        joueur.reculer()  # Le kart du joueur recule
+
+    else:  # Sinon
+        joueur.freiner()  # Le kart du joueur freine
+
+    # Mettre à jour la position de la caméra avec le joueur comme cible
+    camera.update(joueur)
+
+    joueur.draw(screen, camera)
+
     for evenement in pygame.event.get():  # Pour chaque évènement intercepté durant l'exécution du jeu
         if evenement.type == pygame.QUIT:  # Si le joueur veut quitter le jeu
             running = False  # Terminer cette boucle
-
-    keys = pygame.key.get_pressed()
-
-    joueur.avancer(keys)
-
-    joueur.reculer(keys)
-
-    joueur.freiner(keys, BRAKE_EVENT)
-
-    joueur.draw(screen)
 
     pygame.display.flip()
