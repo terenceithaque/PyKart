@@ -19,6 +19,8 @@ class Joueur(pygame.sprite.Sprite):
         # global vitesse
         self.vitesse = 0  # Vitesse de déplacement initiale
 
+        self.direction = 0  # Direction du véhicule
+
         self.vitesse_max = 5  # Vitesse de déplacement maximale
         self.acceleration = 0.1  # Taux d'accélération
         self.deceleration = 0.1  # Taux de décélération
@@ -57,11 +59,21 @@ class Joueur(pygame.sprite.Sprite):
         if self.vitesse > 0:  # Si la vitesse du kart est supérieure à 0
             # Réduire la vitesse jusqu'à ce qu'elle atteigne 0
             self.vitesse = max(self.vitesse - self.deceleration, 0)
+            self.direction = -1  # Direction du véhicule
+            print("self.direction", self.direction)
+            pygame.time.wait(100)
+            self.rect.y += self.direction
+
         elif self.vitesse < 0:
             # Augmenter la vitesse, car elle est négative
             self.vitesse = min(self.vitesse + self.deceleration, 0)
+            self.direction = 1
+            print("self.direction", self.direction)
+            pygame.time.wait(100)
+            self.rect.y += self.direction
 
         self.acceleration = 0.1  # Réinitialiser l'accélération
+        self.direction = 0
         pygame.time.wait(100)
 
     def draw(self, screen, camera):
